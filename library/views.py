@@ -9,11 +9,26 @@ from .serializers import BookSerializer
 class BookView(APIView):
     def get(self,request):
         books=Book.objects.all()
+        title=request.query_params.get("title")
+        author=request.query_params.get("author")
+        price=request.query_params.get("price")
+        sort=request.query_params.get("sort")
+        if title:
+            books=books.filter(
+                title__icontains=title
+            )
+        if author:
+            books=books.filter(
+                author=author
+            )
+        if sort:
+            books=books.order_by(sort)
         serializer=BookSerializer(books,many=True)
         return Response(
             serializer.data,
             status=status.HTTP_200_OK
         )
+        
     def post(self,request):
         serializer=BookSerializer(data=request.data)
         if serializer.is_valid():
