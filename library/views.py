@@ -5,6 +5,7 @@ from django.shortcuts import get_object_or_404
 
 from .models import Book
 from .serializers import BookSerializer
+from .serializers import RegistrationSerializer
 
 class BookView(APIView):
     def get(self,request):
@@ -100,4 +101,18 @@ class BookDetail(APIView):
         book.delete()
         return (
             Response(status.HTTP_204_NO_CONTENT)
+        )
+
+class RegistrationView(APIView):
+    def post(self,request):
+        serializer=RegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                serializer.data,
+                status=status.HTTP_201_CREATED
+            )
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
         )
