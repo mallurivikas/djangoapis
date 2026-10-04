@@ -17,6 +17,8 @@ class BookView(APIView):
         IsAuthenticated
     ]
     def get(self,request):
+
+        print(request.user)
         books=Book.objects.all()
         title=request.query_params.get("title")
         author=request.query_params.get("author")
@@ -39,6 +41,13 @@ class BookView(APIView):
         )
         
     def post(self,request):
+        if request.user.is_staff:
+            return Response(
+                {
+                    "error": "you are not allowed to perform this action"
+                },
+                status=status.HTTP_403_FORBIDDEN
+            )
         serializer=BookSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
